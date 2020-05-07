@@ -1,41 +1,45 @@
 #!/usr/bin/perl
 #
-# distributes a file onto one place on all servers of cssh-clusters.
+# distrubutes a file onto one place on all cssh-clusters.
 # 
 # Author:   Peter Keel <seegras@discordia.ch>
-# Date:     ?
-# Revision: 2008-07-01
-# Version:  0.1
+# Date:     2008-07-01?
+# Revision: 2020-06-05
+# Version:  0.2
 # License:  Artistic License 2.0 or MIT License or GPLv2 
 # URL:      http://seegras.discordia.ch/Programs/
 #
-
-
+use strict;
 use Getopt::Long;
 use Pod::Usage;
 
 # Default Config
-$serverlist = '~/.clusterssh/clusters';
-$serverset = 'all';
+my $serverlist = '~/.clusterssh/clusters';
+my $serverset = 'all';
+# Globals 
+my $needshelp;
+my $containsat;
+my @hosts;
+my $host;
 
 &Getopt::Long::Configure( 'pass_through', 'no_autoabbrev');
 &Getopt::Long::GetOptions(
-                'clusters|l=s'          => \$serverlist,
-                'set|s=s'               => \$serverset,
-                'help|h'                => \$needshelp,
+    'clusters|l=s'      => \$serverlist,
+    'set|s=s'           => \$serverset,
+    'help|h'            => \$needshelp,
 );
 
 if ($needshelp) {
-pod2usage(1);
+    pod2usage(1);
 }
 
 die "Usage: $0 <local-path> <remote-path>\n" unless($ARGV[1]);
 
-$localfile = $ARGV[0];
-$remotepath = $ARGV[1];
+my $localfile = $ARGV[0];
+my $remotepath = $ARGV[1];
 
-open(IN_FILE,"<$serverlist") || die "Cannot open $serverlist for input\n";
-while(<IN_FILE>){
+open(my $in_file,"<","$serverlist") || die "Cannot open $serverlist for input\n";
+while(<$in_file>){
     @content = split(/ /);
     if ($content[0] eq $serverset) {
         @hosts = @content;
@@ -44,7 +48,7 @@ while(<IN_FILE>){
         $containsat = 1; 
     } 
 }
-close IN;
+close $in_file;
 
 if (! @hosts) {
 die "Set of Servers $serverset not found.\n"; 
