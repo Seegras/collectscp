@@ -59,13 +59,13 @@ if (! @hosts) {
 die "Set of Servers $serverset not found.\n"; 
 }
 
-foreach $host (@hosts) {
+foreach my $host (@hosts) {
     if ($host ne @hosts[0]) {
         #print("$host\n");
     }
 }
 
-foreach $host (@hosts) {
+foreach my $host (@hosts) {
     if ($host ne @hosts[0]) {
         chomp $host;
         if ($containsat) {
